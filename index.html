@@ -1,0 +1,1551 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Enigma Documentation</title>
+
+    <style>
+      .highlight table td { padding: 5px; }
+.highlight table pre { margin: 0; }
+.highlight, .highlight .w {
+  color: #f8f8f2;
+  background-color: #272822;
+}
+.highlight .err {
+  color: #272822;
+  background-color: #f92672;
+}
+.highlight .c, .highlight .cd, .highlight .cm, .highlight .c1, .highlight .cs {
+  color: #75715e;
+}
+.highlight .cp {
+  color: #f4bf75;
+}
+.highlight .nt {
+  color: #f4bf75;
+}
+.highlight .o, .highlight .ow {
+  color: #f8f8f2;
+}
+.highlight .p, .highlight .pi {
+  color: #f8f8f2;
+}
+.highlight .gi {
+  color: #a6e22e;
+}
+.highlight .gd {
+  color: #f92672;
+}
+.highlight .gh {
+  color: #66d9ef;
+  background-color: #272822;
+  font-weight: bold;
+}
+.highlight .k, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv {
+  color: #ae81ff;
+}
+.highlight .kc {
+  color: #fd971f;
+}
+.highlight .kt {
+  color: #fd971f;
+}
+.highlight .kd {
+  color: #fd971f;
+}
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .sx, .highlight .s1 {
+  color: #a6e22e;
+}
+.highlight .sr {
+  color: #a1efe4;
+}
+.highlight .si {
+  color: #cc6633;
+}
+.highlight .se {
+  color: #cc6633;
+}
+.highlight .nn {
+  color: #f4bf75;
+}
+.highlight .nc {
+  color: #f4bf75;
+}
+.highlight .no {
+  color: #f4bf75;
+}
+.highlight .na {
+  color: #66d9ef;
+}
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mb, .highlight .mx {
+  color: #a6e22e;
+}
+.highlight .ss {
+  color: #a6e22e;
+}
+    </style>
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
+      <script src="javascripts/all.js"></script>
+  </head>
+
+  <body class="index" data-languages="[&quot;python&quot;,&quot;shell&quot;]">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="images/navbar.png" alt="Navbar" />
+      </span>
+    </a>
+    <div class="tocify-wrapper">
+      <img src="images/logo.png" alt="Logo" />
+        <div class="lang-selector">
+              <a href="#" data-language-name="python">Python</a>
+              <a href="#" data-language-name="shell">Shell</a>
+        </div>
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
+      <div id="toc">
+      </div>
+        <ul class="toc-footer">
+            <li><a href='#'>Sign Up for a Developer Key</a></li>
+            <li><a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
+        </ul>
+    </div>
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id="introduction">Introduction</h1>
+
+<p>Enigma is a distributed, P2P cloud storage and computation platform for encrypted data.</p>
+
+<p>This documentation will cover deploying an Enigma instance, setting up a client, storing data, setting access permissions, and executing computations.</p>
+
+<h1 id="deployment">Deployment</h1>
+
+<h2 id="start-seed-node">Start Seed Node</h2>
+<pre class="highlight shell"><code>docker run enigma -seed 7733
+</code></pre>
+<p>Start an Enigma instance that facilitates peer discovery.</p>
+
+<p><code class="prettyprint">docker run enigma -seed &lt;port&gt;</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">port</code></td>
+<td><code class="prettyprint">int</code></td>
+<td>local port of seed node</td>
+</tr>
+</tbody></table>
+
+<h2 id="add-node">Add Node</h2>
+
+<p>Starts a new Enigma instance and connects it to an existing seed node.</p>
+<pre class="highlight shell"><code>docker run enigma 24.133.21.31 7733
+</code></pre>
+<p><code class="prettyprint">docker run enigma &lt;ip&gt; &lt;port&gt;</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">ip</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>ip address of the seed node</td>
+</tr>
+<tr>
+<td><code class="prettyprint">port</code></td>
+<td><code class="prettyprint">int</code></td>
+<td>port of the seed node</td>
+</tr>
+</tbody></table>
+
+<h1 id="enigma-architecture">Enigma Architecture</h1>
+
+<p>Here we provide a brief overview of the various components of Enigma&rsquo;s platform, describing the core data types, data keys, identities, and access control.</p>
+
+<h2 id="data-types">Data Types</h2>
+
+<p>Enigma is able to perform computation over two basic types of numbers: integers and fixed-point numbers.
+Fixed point numbers include a finite range of precision that is probabilistically rounded during truncation.
+Our framework then also supports vectors and matrices comprised of these scalar types.</p>
+
+<table><thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">enigma.Type.Int</code></td>
+<td>integer scalar</td>
+</tr>
+<tr>
+<td><code class="prettyprint">enigma.Type.IntV</code></td>
+<td>integer vector</td>
+</tr>
+<tr>
+<td><code class="prettyprint">enigma.Type.IntM</code></td>
+<td>integer matrix</td>
+</tr>
+<tr>
+<td><code class="prettyprint">enigma.Type.FP</code></td>
+<td>fixed-point scalar</td>
+</tr>
+<tr>
+<td><code class="prettyprint">enigma.Type.FPV</code></td>
+<td>fixed-point vector</td>
+</tr>
+<tr>
+<td><code class="prettyprint">enigma.Type.FPM</code></td>
+<td>fixed-point matrix</td>
+</tr>
+</tbody></table>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#access-control">Access Control</a></li>
+<li><a href="#arithmetic">Arithmetic</a></li>
+<li><a href="#comparisons">Comparisons</a></li>
+<li><a href="#statistics">Statistics</a></li>
+</ul>
+
+<aside class="notice">
+  Keep in mind that all numbers are taken modulo a large prime, usually greater than 64 bits.
+  As such, it is still possible to cause overflows, as in standard integer types.
+</aside>
+
+<h2 id="keys">Keys</h2>
+
+<p>Data in an Enigma network is secret-shared to multiple nodes for privacy.
+After a value has been stored, it is referenced by a data <em>key</em>.
+We will use the notation <code class="prettyprint">x:Type</code> to denote the key <code class="prettyprint">x</code> whose underlying type is <code class="prettyprint">Type</code>.
+Enigma has two distinct types of keys: standard keys and table keys.</p>
+
+<h3 id="standard-keys">Standard Keys</h3>
+
+<p>A <em>standard key</em> is a string used to store and retrieve values in a privacy-preserving, key-value store.
+Keys may be chosen by the user, but by default are generated at random like the one shown below.
+This helps to prevent any leakage about the underlying values that can be determined by the key.</p>
+
+<p><code class="prettyprint">key = &#39;2b55fadde2424b168d03dad2b02b5816228260bf5d3c7855f05d811be54d31c2&#39;</code></p>
+
+<h3 id="table-keys">Table Keys</h3>
+
+<p>A <em>table key</em> is a string that allows a user to select one or more columns from a table, like those found in relational databases.
+Table and column names may be chosen by the user, and have a corresponding type dictated by the table&rsquo;s schema.  </p>
+
+<p>Table keys can be used to select one or more columns, as follows:</p>
+
+<table><thead>
+<tr>
+<th>Key Format</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">&#39;Table.col1&#39;</code></td>
+<td><code class="prettyprint">IntV</code> or <code class="prettyprint">FPV</code></td>
+<td>selects the vector <code class="prettyprint">col1</code> from <code class="prettyprint">Table</code></td>
+</tr>
+<tr>
+<td><code class="prettyprint">&#39;Table.col1,col2,col3&#39;</code></td>
+<td><code class="prettyprint">IntM</code> or <code class="prettyprint">FPM</code></td>
+<td>selects the matrix <code class="prettyprint">[col1,col2,col3]</code> from <code class="prettyprint">Table</code></td>
+</tr>
+</tbody></table>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#key-value-storage">Key-Value Storage</a></li>
+<li><a href="#table-storage">Table Storage</a></li>
+</ul>
+
+<aside class="notice">
+  Note that for privacy and performance reasons, the client does not maintain metadata or data keys for values the user has stored.
+  These must be persisted elsewhere if they are to be used across multiple sessions.
+</aside>
+
+<h2 id="identity">Identity</h2>
+
+<p>Enigma recognizes two types of identities, <em>users</em> and <em>groups</em>.</p>
+
+<h3 id="users">Users</h3>
+
+<p>An Enigma user is identified and authenticated using a secp256k1 key pair.
+The public key serves as an identifier for a particular user, while the secret key is used to encrypt and authenticate commands from the client.
+All data in Enigma has an explicit owner (a user or a group), thus the <a href="#client">Client</a> persists secret keys so that one&rsquo;s data can be accessed across sessions.</p>
+
+<h3 id="groups">Groups</h3>
+
+<p>A group is a named collection of users, identified by their public keys.
+The user who creates a group becomes its owner, allowing them to modify group membership and access controls for the data owned by a group.</p>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#key-management">Key Management</a></li>
+<li><a href="#making-groups">Making Groups</a></li>
+</ul>
+
+<h2 id="access-control">Access Control</h2>
+
+<p>Each piece of data is owned either by a user or a group.
+In order to run computations on a given key, the requesting user must minimally be either the data&rsquo;s owner, or a member of the group that owns the data.</p>
+
+<p>Enigma also allows the owner of a piece of data to whitelist a set of operations for which it can be used an input.
+If a piece of data is owned by a group, only the creator of the group will be able to edit the whitelist.</p>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#allowing-operations">Allowing Operations</a></li>
+</ul>
+
+<aside class="notice">
+  As this is a beta, the current default for an empty whitelist is to allow any operation.
+  This may change in the future for obvious security reasons.
+</aside>
+
+<h1 id="client-initialization">Client Initialization</h1>
+<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">enigma</span>
+
+<span class="k">with</span> <span class="n">enigma</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">vaddr</span><span class="p">,</span> <span class="n">key_path</span><span class="p">,</span> <span class="n">explain</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+  <span class="c"># Automatically cleans up worker threads and network calls</span>
+</code></pre>
+<p><code class="prettyprint">Client(vaddr, key_path, explain=True)</code></p>
+
+<p>A client is used to issue authenticated commands for performing data storage, permissioning, access controls, and computation.
+Initializing the client requires the public address of the validator and a file path to a user&rsquo;s secret key.
+If no such file exists, the client will automatically generate and write a new public key to the file, which can be used to resume future sessions.
+The optional <code class="prettyprint">explain</code> parameter will cause the client to describe its actions, which may be useful for debugging.
+Instantiating the client will cause it to connect and register with the validator, and can then be used to issue commands.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">vaddr</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>address of validator, <code class="prettyprint">&#39;ip:port&#39;</code></td>
+</tr>
+<tr>
+<td><code class="prettyprint">key_path</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>path to the user&rsquo;s key file</td>
+</tr>
+<tr>
+<td><code class="prettyprint">explain</code></td>
+<td><code class="prettyprint">bool=False</code></td>
+<td>flag indicating whether the client should print information about it&rsquo;s execution</td>
+</tr>
+</tbody></table>
+
+<h1 id="key-management">Key Management</h1>
+
+<h2 id="private-keys">Private Keys</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">get_privkey</span><span class="p">()</span>
+<span class="c">#&gt; u'a1d1fe5e45a433580997c77eeedfc0ed80d2905f443a0f5ffadd4c0f155097e3'</span>
+</code></pre>
+<p><code class="prettyprint">Client#get_privkey()</code></p>
+
+<p>Get the client&rsquo;s private key.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">unicode</code></td>
+<td>the client&rsquo;s hex-encoded secp256k1 private key</td>
+</tr>
+</tbody></table>
+
+<h2 id="public-keys">Public Keys</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">get_pubkey</span><span class="p">()</span>
+<span class="c">#&gt; u'030662b1f5d7cac1083629a007df44d854967c1d8bc541854e67d48d7e635367bd'</span>
+</code></pre>
+<p><code class="prettyprint">Client#get_pubkey()</code></p>
+
+<p>Get the client&rsquo;s public key.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">unicode</code></td>
+<td>the client&rsquo;s hex-encoded, compressed secp256k1 public key</td>
+</tr>
+</tbody></table>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">get_user</span><span class="p">()</span>
+<span class="c">#&gt; u'030662b1f5d7cac1083629a007df44d854967c1d8bc541854e67d48d7e635367bd'</span>
+</code></pre>
+<p><code class="prettyprint">Client#get_user()</code></p>
+
+<p>Get the client&rsquo;s current user, alias for <code class="prettyprint">Client#get_pubkey()</code>.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">unicode</code></td>
+<td>the client&rsquo;s hex-encode, compressed secp256k1 public key</td>
+</tr>
+</tbody></table>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#identity">Identity</a></li>
+<li><a href="#making-groups">Making Groups</a></li>
+</ul>
+
+<h1 id="permissions">Permissions</h1>
+
+<h2 id="making-groups">Making Groups</h2>
+<pre class="highlight python"><code><span class="n">name</span> <span class="o">=</span> <span class="s">'boston hospitals'</span>
+<span class="n">others</span> <span class="o">=</span> <span class="p">[</span><span class="n">user1</span><span class="p">,</span> <span class="n">user2</span><span class="p">]</span>
+
+<span class="c"># create group called `name` with members `[client.get_user(), user1, user2]`</span>
+<span class="n">client</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">others</span><span class="p">)</span>
+<span class="c">#&gt; True</span>
+</code></pre>
+<p><code class="prettyprint">Client#group(name, others)</code></p>
+
+<p>Creates a named group consisting of the current user and the provided list of other users.
+The current user becomes the group&rsquo;s owner.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">name</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>name of the group</td>
+</tr>
+<tr>
+<td><code class="prettyprint">others</code></td>
+<td><code class="prettyprint">list</code></td>
+<td>list of users other than the current user</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>success</td>
+</tr>
+</tbody></table>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#identity">Identity</a></li>
+<li><a href="#public-keys">Public Keys</a></li>
+</ul>
+
+<h2 id="allowing-operations">Allowing Operations</h2>
+<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">enigma.OpCode</span>
+
+<span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s">'Patients.age'</span><span class="p">,</span> <span class="s">'Patients.height'</span><span class="p">,</span> <span class="s">'Patients.weight'</span><span class="p">]</span>
+<span class="n">ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">OpCode</span><span class="o">.</span><span class="n">LinReg</span><span class="p">,</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">Var</span><span class="p">,</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">Mean</span><span class="p">]</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">allow</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">ops</span><span class="p">)</span>
+<span class="c">#&gt; True</span>
+</code></pre>
+<p><code class="prettyprint">Client#allow(keys, ops)</code></p>
+
+<p>Whitelists the set of operations for each of the given data keys.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">keys</code></td>
+<td><code class="prettyprint">list</code></td>
+<td>set of data keys</td>
+</tr>
+<tr>
+<td><code class="prettyprint">ops</code></td>
+<td><code class="prettyprint">list</code></td>
+<td>set of OpCodes to be whitelisted</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>success</td>
+</tr>
+</tbody></table>
+
+<p><strong>Related</strong></p>
+
+<ul>
+<li><a href="#data-types">Data Types</a></li>
+<li><a href="#keys">Keys</a></li>
+<li><a href="#arithmetic">Arithmetic</a></li>
+<li><a href="#comparisons">Comparisons</a></li>
+<li><a href="#statistics">Statistics</a></li>
+</ul>
+
+<h2 id="opcodes">OpCodes</h2>
+
+<table><thead>
+<tr>
+<th>OpCode</th>
+<th>Operations</th>
+<th>Reference</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">OpCode.Sum</code></td>
+<td><code class="prettyprint">sum</code></td>
+<td><a href="#addition">Addition</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.Mul</code></td>
+<td><code class="prettyprint">mul</code></td>
+<td><a href="#multiplication">Multiplication</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.Dot</code></td>
+<td><code class="prettyprint">dot</code></td>
+<td><a href="#dot">Dot</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.Eq</code></td>
+<td><code class="prettyprint">eq</code></td>
+<td><a href="#equality">Equality</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.Cmp</code></td>
+<td><code class="prettyprint">gt</code>, <code class="prettyprint">gte</code>, <code class="prettyprint">lte</code>, and <code class="prettyprint">lt</code></td>
+<td><a href="#comparisons">Comparisons</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.Mean</code></td>
+<td><code class="prettyprint">mean</code></td>
+<td><a href="#mean">Mean</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.Var</code></td>
+<td><code class="prettyprint">var</code></td>
+<td><a href="#variance">Variance</a></td>
+</tr>
+<tr>
+<td><code class="prettyprint">OpCode.LinReg</code></td>
+<td><code class="prettyprint">linreg</code></td>
+<td><a href="#linear-regression">Linear Regression</a></td>
+</tr>
+</tbody></table>
+
+<h1 id="key-value-storage">Key-Value Storage</h1>
+
+<h2 id="store-data">Store Data</h2>
+<pre class="highlight python"><code><span class="c"># Store integer scalar, vector, and matrix</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">k3</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+
+<span class="c"># Store fixed-point scalar, vector, and matrix</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="n">k3</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">]])</span>
+
+<span class="c"># Store value accessible to group 'enigma-dev'</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s">'enigma-dev'</span><span class="p">)</span>
+<span class="c">#&gt; k1:'82049950f7ac44b69b690e2913d084c5086736f3a6a26bf7add4361a36531bb1'</span>
+
+<span class="c"># Store value with user chosen key</span>
+<span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">k1</span><span class="p">)</span>
+<span class="c">#&gt; '82049950f7ac44b69b690e2913d084c5086736f3a6a26bf7add4361a36531bb1'</span>
+
+
+<span class="c"># If at least one element is of type `float`,</span>
+<span class="c"># all elements are promoted to `float`.</span>
+
+<span class="c"># stores a fixed-point vector</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+<span class="c"># stores a fixed-point matrix</span>
+<span class="n">k3</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</code></pre>
+<p><code class="prettyprint">Client#store(value, key=None, group=None)</code></p>
+
+<p>Stores the provided value under the provided standard key.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">value</code></td>
+<td><code class="prettyprint">int</code>, <code class="prettyprint">float</code>, or <code class="prettyprint">list</code></td>
+<td>scalar, vector, or matrix of <code class="prettyprint">int</code> or <code class="prettyprint">float</code> values, also accepts <code class="prettyprint">numpy.array</code></td>
+</tr>
+<tr>
+<td><code class="prettyprint">key</code></td>
+<td><code class="prettyprint">string=None</code></td>
+<td>desired key under which to store <code class="prettyprint">value</code>, otherwise a random key is generated</td>
+</tr>
+<tr>
+<td><code class="prettyprint">group</code></td>
+<td><code class="prettyprint">string=None</code></td>
+<td>name of the group to own <code class="prettyprint">value</code>, otherwise the user will solely own the data</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">string</code> or <code class="prettyprint">None</code></td>
+<td>if successful, the key under which <code class="prettyprint">value</code> is stored, otherwise <code class="prettyprint">None</code></td>
+</tr>
+</tbody></table>
+
+<aside class="success">
+  The underlying type of `value` will be inferred based on the input provided.
+  For multidimensional types, if any of the elements are `float`, the entire vector or matrix will be lifted into `FP*`.
+</aside>
+
+<h2 id="load-data">Load Data</h2>
+<pre class="highlight python"><code><span class="n">key</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="c">#&gt; [1,2,3]</span>
+</code></pre>
+<p><code class="prettyprint">Client#load(key)</code></p>
+
+<p>Retrieves a value from the network, compatible with standard and table keys.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">key</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key of the value to load</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">int</code>, <code class="prettyprint">float</code>, or <code class="prettyprint">list</code></td>
+<td>plaintext scalar, vector or matrix</td>
+</tr>
+</tbody></table>
+
+<h1 id="table-storage">Table Storage</h1>
+
+<h2 id="making-schemas">Making Schemas</h2>
+<pre class="highlight python"><code><span class="n">enigma</span><span class="o">.</span><span class="n">Schema</span><span class="p">([</span>
+  <span class="p">(</span><span class="s">'age'</span><span class="p">,</span>    <span class="n">enigma</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">Int</span><span class="p">),</span> <span class="c"># years</span>
+  <span class="p">(</span><span class="s">'height'</span><span class="p">,</span> <span class="n">enigma</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">FP</span><span class="p">),</span>  <span class="c"># inches</span>
+  <span class="p">(</span><span class="s">'weight'</span><span class="p">,</span> <span class="n">enigma</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">FP</span><span class="p">),</span>  <span class="c"># pounds</span>
+<span class="p">])</span>
+<span class="c">#&gt; (age:Int, height:FP, weight:FP)</span>
+</code></pre>
+<p><code class="prettyprint">Schema(schema_desc)</code></p>
+
+<p>Creates a table schema, specifying the name and type of each field.
+The schema is constructed from a list of <code class="prettyprint">(str, enigma.Type)</code> tuples.</p>
+
+<table><thead>
+<tr>
+<th>Parameters</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">schema_desc</code></td>
+<td><code class="prettyprint">list</code></td>
+<td>list of tuples, each consisting of a column&rsquo;s name and type</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">Schema</code></td>
+<td>map that preserves the ordering of columns in <code class="prettyprint">schema_desc</code></td>
+</tr>
+</tbody></table>
+
+<h2 id="creating-tables">Creating Tables</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="s">'Patients'</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="s">'boston hospitals'</span><span class="p">)</span>
+<span class="c">#&gt; True</span>
+</code></pre>
+<p><code class="prettyprint">Client#create_table(name, schema, group=None)</code></p>
+
+<table><thead>
+<tr>
+<th>Parameters</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">name</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>name of the table</td>
+</tr>
+<tr>
+<td><code class="prettyprint">schema</code></td>
+<td><code class="prettyprint">schema</code></td>
+<td>map of field names to the <code class="prettyprint">enigma.Type</code> of the column</td>
+</tr>
+<tr>
+<td><code class="prettyprint">group</code></td>
+<td><code class="prettyprint">string=None</code></td>
+<td>name of the group to own <code class="prettyprint">value</code>, otherwise the user will solely own the data</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>success</td>
+</tr>
+</tbody></table>
+
+<h2 id="inserting-rows">Inserting Rows</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s">'Patients'</span><span class="p">,</span> <span class="p">[</span>
+  <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mf">64.3</span><span class="p">,</span> <span class="mf">118.2</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mf">73.8</span><span class="p">,</span> <span class="mf">180.6</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mf">69.5</span><span class="p">,</span> <span class="mf">210.7</span><span class="p">],</span>
+<span class="p">])</span>
+<span class="c">#&gt; 3</span>
+</code></pre>
+<p><code class="prettyprint">Client#insert(name, rows)</code></p>
+
+<p>Inserts a set of rows into the table with the provided name.</p>
+
+<table><thead>
+<tr>
+<th>Parameters</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">name</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>name of the table</td>
+</tr>
+<tr>
+<td><code class="prettyprint">rows</code></td>
+<td><code class="prettyprint">list</code></td>
+<td>row-oriented matrix consisting of the values to be inserted</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">int</code></td>
+<td>number of rows inserted</td>
+</tr>
+</tbody></table>
+
+<aside class="success">
+  As with key-value storage, the client will attempt to perform type promotion on the provided rows.
+  However, the promotion is done on a per-column basis, as each column is treated independently.
+  Furthermore, if the client does not have enough information to do type promotion, nodes will promote `IntV` columns to `FPV` in accordance with the table&rsquo;s schema.
+</aside>
+
+<h1 id="arithmetic">Arithmetic</h1>
+
+<h2 id="addition">Addition</h2>
+<pre class="highlight python"><code><span class="c"># summing integer scalars</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; 7</span>
+
+<span class="c"># summing integer vectors</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; [3, 4]</span>
+
+<span class="c"># summing integer matrices</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">client</span><span class="o">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; [[1,1], [1,0]]</span>
+</code></pre>
+<p><code class="prettyprint">Client#sum(x:Type, y:Type)</code></p>
+
+<p>Computes the sum of two identical data types.</p>
+
+<table><thead>
+<tr>
+<th>Parameters</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for value of type <code class="prettyprint">Type</code></td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for value of same type <code class="prettyprint">Type</code></td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">int</code>, <code class="prettyprint">float</code>, or <code class="prettyprint">list</code></td>
+<td>sum of <code class="prettyprint">x</code> and <code class="prettyprint">y</code></td>
+</tr>
+</tbody></table>
+
+<h2 id="multiplication">Multiplication</h2>
+<pre class="highlight python"><code><span class="c"># multiplying integer scalars</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; 12</span>
+
+<span class="c"># point-multiplying integer vectors</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; [2, 3]</span>
+
+<span class="c"># point-multiplying integer matrices</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; [[0,1], [1,-1]]</span>
+</code></pre>
+<p><code class="prettyprint">Client#mul(x:Type, y:Type)</code></p>
+
+<p>Computes the point-wise multiplication of two identical data types.</p>
+
+<table><thead>
+<tr>
+<th>Parameters</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for value of type <code class="prettyprint">Type</code></td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for value of same type <code class="prettyprint">Type</code></td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">int</code>, <code class="prettyprint">float</code>, or <code class="prettyprint">list</code></td>
+<td>point-wise multiplication of <code class="prettyprint">x</code> and <code class="prettyprint">y</code></td>
+</tr>
+</tbody></table>
+
+<h2 id="dot">Dot</h2>
+<pre class="highlight python"><code><span class="c"># dotting integer vectors</span>
+<span class="n">k1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">k2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span>
+<span class="c">#&gt; 5</span>
+</code></pre>
+<p><code class="prettyprint">Client#dot(x:Type, y:Type)</code></p>
+
+<p>Computes the dot product of two identical data types.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key of type <code class="prettyprint">IntV</code> or <code class="prettyprint">FPV</code>.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key of type <code class="prettyprint">Int</code> or <code class="prettyprint">FPV</code>.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">int</code>, <code class="prettyprint">float</code>, or <code class="prettyprint">list</code></td>
+<td>dot product of <code class="prettyprint">x</code> and <code class="prettyprint">y</code></td>
+</tr>
+</tbody></table>
+
+<h1 id="comparisons">Comparisons</h1>
+
+<h2 id="greater-than">Greater Than</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+<span class="n">client</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; False</span>
+</code></pre>
+<p><code class="prettyprint">Client#gt(x:Int, y:Int)</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>Returns x &gt; y.</td>
+</tr>
+</tbody></table>
+
+<h2 id="greater-than-or-equal">Greater Than or Equal</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">gte</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="c">#&gt; False</span>
+<span class="n">client</span><span class="o">.</span><span class="n">gte</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+<span class="n">client</span><span class="o">.</span><span class="n">gte</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+</code></pre>
+<p><code class="prettyprint">Client#geq(x:Int, y:Int)</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>Returns x &gt;= y.</td>
+</tr>
+</tbody></table>
+
+<h2 id="equality">Equality</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+</code></pre>
+<p><code class="prettyprint">Client#eq(x:Int, y:Int)</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>Returns x == y.</td>
+</tr>
+</tbody></table>
+
+<h2 id="less-than-or-equal">Less Than or Equal</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">leq</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; False</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leq</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+<span class="n">client</span><span class="o">.</span><span class="n">leq</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+</code></pre>
+<p><code class="prettyprint">Client#leq(x:Int, y:Int)</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>Returns x &lt;= y.</td>
+</tr>
+</tbody></table>
+
+<h2 id="less-than">Less Than</h2>
+<pre class="highlight python"><code><span class="n">client</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="c">#&gt; True</span>
+<span class="n">client</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="c">#&gt; False</span>
+</code></pre>
+<p><code class="prettyprint">Client#lt(x:Int, y:Int)</code></p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">x</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">y</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">Int</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">bool</code></td>
+<td>Returns x &lt; y.</td>
+</tr>
+</tbody></table>
+
+<h1 id="statistics">Statistics</h1>
+
+<h2 id="mean">Mean</h2>
+<pre class="highlight python"><code><span class="n">v</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="c">#&gt; 4.6667</span>
+</code></pre>
+<p><code class="prettyprint">Client#mean(v:FPV)</code></p>
+
+<p>Computes the mean of a vector of fixed-point numbers.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">v</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">FPV</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">float</code></td>
+<td>Returns the mean of <code class="prettyprint">v</code>.</td>
+</tr>
+</tbody></table>
+
+<h2 id="variance">Variance</h2>
+<pre class="highlight python"><code><span class="n">v</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+<span class="n">client</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="c">#&gt; 100.62839</span>
+</code></pre>
+<p><code class="prettyprint">Client#var(v:FPV)</code></p>
+
+<p>Computes the variance of a vector of fixed-point numbers.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">v</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>A key for an <code class="prettyprint">FPV</code> value.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">float</code></td>
+<td>Returns the variance of <code class="prettyprint">v</code>.</td>
+</tr>
+</tbody></table>
+
+<h2 id="linear-regression">Linear Regression</h2>
+<pre class="highlight python"><code><span class="n">Akey</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">bkey</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">x0key</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">store</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">linreg</span><span class="p">(</span><span class="n">Akey</span><span class="p">,</span> <span class="n">bkey</span><span class="p">,</span> <span class="n">x0key</span><span class="p">)</span>
+<span class="c">#&gt; [740.324745]</span>
+</code></pre>
+<p><code class="prettyprint">Client#linreg(A:FPM, b:FPV, x0:FPV)</code></p>
+
+<p>Performs linear regression of a matrix of independent parameters and their relation to some dependent target vector, using an initial approximation.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">A</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for an <code class="prettyprint">n</code> by <code class="prettyprint">m</code> fixed-point matrix, the independent variables.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">b</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for a length <code class="prettyprint">n</code> fixed-point vector, the dependent variables.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">x0</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>key for a length <code class="prettyprint">m</code> fixed-point vector, the initial approximation.</td>
+</tr>
+<tr>
+<td><strong>returns</strong></td>
+<td><code class="prettyprint">list</code></td>
+<td>values representing the solution&rsquo;s coefficients.</td>
+</tr>
+</tbody></table>
+
+<h1 id="errors">Errors</h1>
+
+<table><thead>
+<tr>
+<th>Status Code</th>
+<th>Meaning</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><strong>1x</strong></td>
+<td><strong>Success</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code class="prettyprint">10</code></td>
+<td>OK</td>
+<td>The request was successfully processed.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">11</code></td>
+<td>Created</td>
+<td>The requested resource has been successfully created.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>2x</strong></td>
+<td><strong>Request Failure</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code class="prettyprint">20</code></td>
+<td>Bad Request</td>
+<td>The request is malformed, error message returned.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>3x</strong></td>
+<td><strong>Permission Failure</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code class="prettyprint">30</code></td>
+<td>Unauthenticated</td>
+<td>The requesting user was not successfully authenticated.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">31</code></td>
+<td>Unauthorized</td>
+<td>The requesting user was not authorized to perform the request.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>4x</strong></td>
+<td><strong>Resource Failure</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code class="prettyprint">40</code></td>
+<td>Not Found</td>
+<td>At least one of the resources required to process the request was not found.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">41</code></td>
+<td>Data Inconsistency</td>
+<td>The persisted resource has been corrupted or is otherwise inconsistent.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">42</code></td>
+<td>Storage Unavailable</td>
+<td>The persistent storage required to process the request is unavailable.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">43</code></td>
+<td>Network Unavailable</td>
+<td>At least one participant was or became unreachable while processing the request.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">44</code></td>
+<td>Too Many Requests</td>
+<td>The client is being rate limited.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>5x</strong></td>
+<td><strong>Execution Failure</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><code class="prettyprint">50</code></td>
+<td>Aborted</td>
+<td>The requested operation aborted.</td>
+</tr>
+<tr>
+<td><code class="prettyprint">51</code></td>
+<td>Internal Server Error</td>
+<td>The request could not be processed successfully.</td>
+</tr>
+</tbody></table>
+
+<h1 id="advanced-deployment">Advanced Deployment</h1>
+
+<p>An Enigma network consists of two types of processes&ndash;a single <em>validator</em> and <code class="prettyprint">N</code> <em>nodes</em>.
+The validator is responsible for disseminating network parameters and ensuring the correctness of MPC executions.
+Nodes are responsible for storing secret-shared data and collaboratively executing commands from clients.
+We currently provide a Docker image called <code class="prettyprint">enigma:0.1</code> that contains a precompiled executable called <code class="prettyprint">enigma</code>.
+For installation instructions, see <a href="https://github.com/enigmampc/enigma-docker">enigma-docker</a>.</p>
+
+<h2 id="key-files">Key Files</h2>
+<pre class="highlight shell"><code>enigma keygen <span class="o">[</span>-keyname|-force]
+</code></pre><pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"privkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5b6a6d44b9d4b398332625c9690bd5ecfe9d7a0a01875a4057fdcc0071b02593"</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"pubkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"03fa726ea7bbb81cbe3571032567c3a27796b9786b34c7910936897cb715f7d341"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>All communication in Enigma is encrypted and authenticated using secp256k1 keypairs.
+Each instance (node or validator) should have its own distinct keypair, which can be loaded from disk during startup.
+The default <code class="prettyprint">keyname</code> is <code class="prettyprint">enigma</code>, which will write the key to file called <code class="prettyprint">enigma.key</code> in the current directory.
+If multiple processes are running in the same directory, it will be useful to name the keys accordingly, e.g. <code class="prettyprint">validator.key, node1.key, node2.key, ...</code>.</p>
+
+<table><thead>
+<tr>
+<th>Optional</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>-keyname</td>
+<td>string</td>
+<td>the name of the key file, the final path is suffixed with <code class="prettyprint">&quot;.key&quot;</code></td>
+</tr>
+<tr>
+<td>-force</td>
+<td>flag</td>
+<td>if present, overwrites any existing key file with the same name</td>
+</tr>
+</tbody></table>
+
+<h2 id="configuration-files">Configuration Files</h2>
+<pre class="highlight shell"><code>enigma configure -vaddr &lt;pub-addr&gt; <span class="o">[</span>-keyname] <span class="o">[</span>-confname|-force] <span class="o">[</span>-N|-T|-E|-F|-P]
+</code></pre><pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nt">"validator"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nt">"pubkey"</span><span class="p">:</span><span class="w"> </span><span class="s2">"03fa726ea7bbb81cbe3571032567c3a27796b9786b34c7910936897cb715f7d341"</span><span class="p">,</span><span class="w">
+      </span><span class="nt">"addr"</span><span class="p">:</span><span class="w">   </span><span class="s2">":7733"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nt">"n"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"t"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"e"</span><span class="p">:</span><span class="w"> </span><span class="mi">48</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"f"</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"p"</span><span class="p">:</span><span class="w"> </span><span class="mi">22953686867719691230002707821868552601124472329079</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>During start up, each validator or node reads from a configuration file that specifies critical network parameters.
+Most importantly, it contains the validator&rsquo;s address and public key, which allows nodes to register themselves with the validator and receive membership updates.
+These parameters are also disseminated to clients to ensure they can securely communicate with the network and properly generate secret shares.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">-vaddr</code></td>
+<td><code class="prettyprint">string=:7733</code></td>
+<td>the validator&rsquo;s TCP address</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-keyname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the validator&rsquo;s key</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-confname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the configuration file, the final path is suffixed by <code class="prettyprint">.conf</code></td>
+</tr>
+<tr>
+<td><code class="prettyprint">-force</code></td>
+<td><code class="prettyprint">flag</code></td>
+<td>if present, overwrites any existing key file with the same name</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-N</code></td>
+<td><code class="prettyprint">int=3</code></td>
+<td>number of nodes in the network</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-T</code></td>
+<td><code class="prettyprint">int=2</code></td>
+<td>secret-share threshold for reconstruction</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-E</code></td>
+<td><code class="prettyprint">int=48</code></td>
+<td>number of integral bits in a fixed-point number</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-F</code></td>
+<td><code class="prettyprint">int=16</code></td>
+<td>number of precision bits in a fixed-point number</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-P</code></td>
+<td><code class="prettyprint">base-10-string</code></td>
+<td>secret-share modulus, must be a large prime with more than <code class="prettyprint">2*(E+F)</code> bits</td>
+</tr>
+</tbody></table>
+
+<p>If the instances will be running on separate machines or containers, please ensure that <code class="prettyprint">-vaddr</code> specifies the validator&rsquo;s <em>public address</em>, that is, one that is reachable from the other machines or containers.
+The default is <code class="prettyprint">:7733</code>, which is only useful for local Enigma networks.</p>
+
+<p>The configuration step requires reading a public key from an existing <a href="#key-files">key file</a>.
+If a <code class="prettyprint">-keyname</code> is provided, it will read from <code class="prettyprint">&lt;name&gt;.key</code>, otherwise defaulting to <code class="prettyprint">enigma.key</code>.</p>
+
+<p>If successful, the configuration will be written to <code class="prettyprint">enigma.conf</code> (or <code class="prettyprint">&lt;name&gt;.conf</code> if <code class="prettyprint">-confname</code> was specified). 
+Again, the <code class="prettyprint">-force</code> flag can be used to overwrite an existing configuration file.</p>
+
+<h3 id="installing-configuration-files">Installing Configuration Files</h3>
+<pre class="highlight shell"><code>enigma printconfig <span class="o">[</span>-confname]
+</code></pre>
+<p>We have also provided a <code class="prettyprint">printconfig</code> command which prints the contents of a configuration file as a single line to the terminal.
+This will be useful for installing identical configuration files on different machines.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">-confname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the configuration file to print</td>
+</tr>
+</tbody></table>
+
+<p>Once the output has been printed and copied, it can be installed using <code class="prettyprint">echo &#39;&lt;output&gt;&#39; &gt; enigma.conf</code>, or to some other configuration file name.
+Though the output of <code class="prettyprint">printconfig</code> is a single line, the JSON will be reformatted and persisted after being loaded from disk by a node or validator.</p>
+
+<h2 id="starting-network">Starting Network</h2>
+
+<h3 id="validator">Validator</h3>
+<pre class="highlight shell"><code>enigma start validator -keyname enigma.key -confname enigma.conf
+</code></pre>
+<p>`enigma start validator [-keyname|-confname]</p>
+
+<p>The validator will listen on the address specified by the configuration file.
+By default, <code class="prettyprint">enigma.key</code> and <code class="prettyprint">enigma.conf</code> will be used unless otherwise specified.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">-keyname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the key file</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-confname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the configuration file</td>
+</tr>
+</tbody></table>
+
+<h3 id="nodes">Nodes</h3>
+<pre class="highlight shell"><code>enigma start node -naddr 23.173.82.12:7733 -keyname enigma.key -confname enigma.conf
+</code></pre>
+<p>`enigma start node -naddr <pub-addr> [-keyname|-confname]</p>
+
+<p>On startup, the node will attempt to connect to the validator address in the configuration file.
+Please ensure that <code class="prettyprint">-naddr</code> is the public address of the node.
+This address will be registered with the validator and disseminated to other nodes and clients that connect to the network.</p>
+
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td><code class="prettyprint">-naddr</code></td>
+<td><code class="prettyprint">string</code></td>
+<td>listening address of the node</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-keyname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the key file</td>
+</tr>
+<tr>
+<td><code class="prettyprint">-confname</code></td>
+<td><code class="prettyprint">string=enigma</code></td>
+<td>name of the configuration file</td>
+</tr>
+</tbody></table>
+
+<aside class="notice">
+During startup, each instance will actually begin listening on two different ports.
+The primary port (specified by `-vaddr` or `-naddr`) is used for traffic inside the Enigma network. 
+The second port, listening on primary port +1, is used for communicating with clients. 
+The reason is twofold, to separate security concerns and also because they utilize different encoding schemes. 
+This information is not necessary, but may be useful in debugging any potential issues that may arise during setup. 
+Given the validator&rsquo;s and node&rsquo;s primary addresses, the client is designed to automatically establish connections over their respective client ports.
+</aside>
+
+<h2 id="walkthrough">Walkthrough</h2>
+<pre class="highlight shell"><code><span class="c"># SETUP SEED NODE</span>
+docker run -it --name validator -p 7733:7733 -p 7734:7734 enigma:0.1
+enigma keygen
+enigma configure -vaddr &lt;validator-pub-ip&gt;:7733
+enigma printconfig
+<span class="c"># Copy output to install configuration on nodes</span>
+enigma start validator
+
+<span class="c"># FOR EACH NODE `i`</span>
+docker run -it --name node&lt;i&gt; -p 7735:7735 -p 7736:7736 enigma:0.1
+enigma keygen
+<span class="nb">echo</span> <span class="s1">'&lt;printconfig-output&gt;'</span> &gt; enigma.conf
+enigma start node -naddr &lt;node-i-pub-ip&gt;:7735
+</code></pre>
+<p>Here we provide an example for setting up an Enigma Network.
+We assume that each machine has already installed <a href="https://github.com">Docker</a>
+We assume here that the validator and nodes each run in separate docker containers. 
+Once each instance setup, you can use <code class="prettyprint">&lt;CTRL p&gt; + &lt;CTRL q&gt;</code> to detach from a docker container and leave it running.</p>
+
+<aside class="warning">
+Always ensure that nodes connect to the validator in the same order.
+The ordering determines the network identifier given to each node.
+Failing to do so will prevent shares from being reconstructed properly.
+</aside>
+
+      </div>
+      <div class="dark-box">
+          <div class="lang-selector">
+                <a href="#" data-language-name="python">Python</a>
+                <a href="#" data-language-name="shell">Shell</a>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
